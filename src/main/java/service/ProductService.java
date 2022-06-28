@@ -27,10 +27,9 @@ public class ProductService implements IProductService {
             "p.image " +
             "FROM products AS p";
 
-    private static String SELECT_PRODUCT_BY_ID = "" +
-            "SELECT COUNT(*) AS count " +
-            "FROM products AS p " +
-            "WHERE p.productId = ?;";
+    private static String SELECT_PRODUCT_BY_ID = "" + "SELECT p.nameProduct, p.priceProduct, p.quantityProduct, p.typeProduct, p.description, p.image" +
+    " " + "FROM products AS p" + " " +
+    "WHERE p.productId = ?;";
 
     private static String INSER_PRODUCT = "" +
             "INSERT INTO milk_tea_hana.products (" +
@@ -178,8 +177,8 @@ public class ProductService implements IProductService {
             while (rs.next()) {
                 int productId = rs.getInt("productId");
                 String nameProduct = rs.getString("nameProduct");
-                String priceProduct = String.valueOf(FormatVND.doubleToVND(rs.getDouble("priceProduct")));
-                String quantityProduct = String.valueOf(rs.getInt("quantityProduct"));
+                double priceProduct = rs.getDouble("priceProduct");
+                int quantityProduct = rs.getInt("quantityProduct");
                 String typeProduct = rs.getString("typeProduct");
                 String description = rs.getString("description");
                 String createdAT = String.valueOf(rs.getDate("createdAT"));
@@ -187,7 +186,7 @@ public class ProductService implements IProductService {
                 String image = rs.getString("image");
 
 
-                productList.add(new Product(productId, nameProduct, Double.parseDouble(priceProduct), Integer.parseInt(quantityProduct), typeProduct, description,createdAT, updatedAT, image));
+                productList.add(new Product(productId, nameProduct, priceProduct, quantityProduct, typeProduct, description,createdAT, updatedAT, image));
             }
         }
         catch (SQLException e) {
@@ -209,15 +208,15 @@ public class ProductService implements IProductService {
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
+//                int id = rs.getInt("productId");
                 String nameProduct = rs.getString("nameProduct");
-                String piceProduct = String.valueOf(rs.getDouble("piceProduct"));
+                double piceProduct = rs.getDouble("priceProduct");
                 int quantityProduct = rs.getInt("quantityProduct");
                 String typeProduct = rs.getString("typeProduct");
                 String description = rs.getString("description");
                 String image = rs.getString("image");
 
-                product = new Product(productId, nameProduct, piceProduct, quantityProduct, typeProduct, description, image);
+                product = new Product(nameProduct, piceProduct, quantityProduct, typeProduct, description, image);
             }
         }
         catch (SQLException e) {

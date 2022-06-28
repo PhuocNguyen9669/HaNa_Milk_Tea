@@ -5,6 +5,7 @@ import model.User;
 import utils.MySQLConnUtils;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,18 +26,7 @@ public class UserService implements IUserService {
             "u.img " +
             "FROM users AS u;";
 
-    public static String SELECT_USER_BY_ID = "" +
-            "SELECT " +
-            "u.userId " +
-            "u.fullName " +
-            "u.age " +
-            "u.address " +
-            "u.email " +
-            "u.createdAT " +
-            "u.updatedAT " +
-            "u.img " +
-            "FROM users AS " +
-            "WHERE u.id = ?;";
+
 //    public static final String SP_INSERT_USER = "{CALL SP_INSERT_USER (?,?,?,?,?,?,?)}"
 
     public static  String INSERT_USER = "" +
@@ -52,6 +42,8 @@ public class UserService implements IUserService {
             "`createdAT`, " +
             "`img` ) " +
             "VALUES (?,?,?,?,?,?,?,?,now(),?);";
+
+    public static String SELECT_USER_BY_ID = "SELECT u.full_name, u.age, u.address, u.updatedAT, u.img FROM users AS u WHERE u.userId = ?;";
 
     public static  String UPDATE_USER = "" +
             "UPDATE users AS u " +
@@ -117,7 +109,7 @@ public class UserService implements IUserService {
 
         try {
             Connection connection = MySQLConnUtils.getConnection();
-            PreparedStatement statement = connection.prepareStatement(INSERT_USER);
+            PreparedStatement statement = connection.prepareCall(INSERT_USER);
             statement.setString(1, user.getUserName());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getFullName());
@@ -181,15 +173,13 @@ public class UserService implements IUserService {
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String fullname = rs.getString("fullName");
-                String phone = rs.getString("phone");
+                String fullname = rs.getString("full_name");
                 int age = rs.getInt("age");
-                String email = rs.getString("email");
                 String address = rs.getString("address");
+                String update = String.valueOf(rs.getDate("updatedAT"));
                 String img = rs.getString("img");
 
-                user = new User(userId, fullname, phone, age, email, address, img);
+                user = new User( fullname , age , address,update, img);
             }
         }
         catch (SQLException e) {
